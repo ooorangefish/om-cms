@@ -15,6 +15,16 @@ const addSong = async (songData: Song) => {
   }).then((res) => res.json());
 };
 
+const updateSong = async (songData: Song) => {
+  return await fetch(baseUrl + "/updateSong/" + songData.id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(songData),
+  }).then((res) => res.json());
+};
+
 const get = async (path: string) => {
   return await fetch(baseUrl + path).then((res) => res.json());
 };
@@ -42,6 +52,12 @@ const getArtists = async () => {
 
 const deleteArtist = async (id: string) => {
   return await fetch(baseUrl + `/deleteArtist/${id}`, {
+    method: "DELETE",
+  }).then((res) => res.json());
+};
+
+const deleteSong = async (id: string) => {
+  return await fetch(baseUrl + `/deleteSong/${id}`, {
     method: "DELETE",
   }).then((res) => res.json());
 };
@@ -76,4 +92,6 @@ export {
   get,
   deleteRecommendation,
   deleteAlbum,
+  updateSong,
+  deleteSong,
 };

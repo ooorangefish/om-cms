@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
 import { formatDuration } from "@/lib/utils";
-import { getSongs, deleteArtist, addSong } from "@/lib/requests";
+import { getSongs, deleteSong, addSong, updateSong } from "@/lib/requests";
 import SongUpload from "@/components/SongUpload";
 import ImageUpload from "@/components/ImageUpload";
 import { Label } from "@radix-ui/react-label";
@@ -58,27 +58,36 @@ const Edit = ({
   clearSong: () => void;
 }) => {
   const { toast } = useToast();
-
   const [open, setOpen] = useState(false);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [loading, setLoading] = useState(false);
   const form = useForm<Song & { albumId: string }>({
     defaultValues: song,
   });
-
-  useEffect(() => {
-    get("/albums").then((data) => setAlbums(data));
-  }, []);
+  const filePath = form.watch("filePath");
 
   useEffect(() => {
     if (!song) return;
-    form.reset(song);
+    get("/albums")
+      .then((data) => setAlbums(data))
+      .then(() => {
+        Object.keys(song).forEach((key) => {
+          if (key === "album") {
+            form.setValue("albumId", song.album.id + "");
+          }
+
+          form.setValue(
+            key as keyof typeof song,
+            song[key as keyof typeof song],
+          );
+        });
+      });
   }, [song]);
 
   function onSubmit(data: Song) {
     setLoading(true);
 
-    addSong(data).finally(() => {
+    updateSong(data).finally(() => {
       setLoading(false);
       setOpen(false);
       toast({
@@ -122,7 +131,7 @@ const Edit = ({
                 </FormItem>
               )}
             />
-            <SongUpload />
+            <SongUpload filePath={filePath} />
             <FormField
               control={form.control}
               name="title"
@@ -184,12 +193,19 @@ const Add = ({ successCallback }: { successCallback: () => void }) => {
       toast({
         title: "歌曲上传成功！",
       });
+      form.reset({});
       successCallback();
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={() => setOpen(false)}>
+    <Dialog
+      open={open}
+      onOpenChange={() => {
+        setOpen(false);
+        form.reset({});
+      }}
+    >
       <Button onClick={() => setOpen(true)}>上传歌曲</Button>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -325,6 +341,15 @@ export const columns: ({
     ),
   },
   {
+    accessorKey: "filePath",
+    header: "文件",
+    cell: ({ row }) => (
+      <audio controls>
+        <source src={row.getValue("filePath")} type="audio/mp3" />
+      </audio>
+    ),
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
@@ -385,10 +410,10 @@ export default function Singers() {
           columns({
             edit: (v: Song) => setEditingSong(v),
             deleteRow: (id) =>
-              deleteArtist(id).then(() => {
+              deleteSong(id).then(() => {
                 setShouldRefresh(true);
                 toast({
-                  title: "歌手删除成功!",
+                  title: "歌曲删除成功!",
                 });
               }),
           }) as any

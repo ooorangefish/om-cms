@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FileUp } from "lucide-react";
+import { FileUp, FileCheck } from "lucide-react";
 import { useFormContext } from "react-hook-form";
 import { upload } from "@/lib/requests";
 
-function SongUpload() {
+function SongUpload({ filePath }: { filePath?: string }) {
   const [isUploaded, setIsUploaded] = useState(false);
   const ref = React.useRef<HTMLInputElement>(null);
   const form = useFormContext();
-  const filePath = form.watch("filePath");
 
+  console.log("filepath", form.getValues());
   useEffect(() => {
     if (filePath) {
       setIsUploaded(true);
@@ -35,6 +35,7 @@ function SongUpload() {
       if (result) {
         console.log(result);
         form.setValue("filPath", "http://localhost:3001/" + result.path);
+        setIsUploaded(true);
       } else {
       }
     } catch (error) {
@@ -54,7 +55,12 @@ function SongUpload() {
       />
       <div className="w-full flex justify-center cursor-pointer">
         {isUploaded ? (
-          <p>Uploaded</p>
+          <FileCheck
+            color="green"
+            strokeWidth={1}
+            className="h-20 w-20"
+            onClick={() => ref.current?.click()}
+          />
         ) : (
           <FileUp
             strokeWidth={1}
