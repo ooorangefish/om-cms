@@ -158,12 +158,13 @@ const Add = ({ successCallback }: { successCallback: () => void }) => {
       toast({
         title: "歌手添加成功!",
       });
+      form.reset();
       successCallback();
     });
   }
 
   return (
-    <Dialog open={open} onOpenChange={() => setOpen(false)}>
+    <Dialog open={open} onOpenChange={() => {setOpen(false); form.reset()}}>
       <Button onClick={() => setOpen(true)}>添加歌手</Button>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -281,7 +282,8 @@ export const columns: ({
     header: "头像",
     cell: ({ row }) => (
       <img
-        src={row.getValue("profileImage")}
+        //@ts-ignore
+        src={process.env.NEXT_PUBLIC_SERVER_URL+row.getValue("profileImage")}
         className="h-8 w-8 rounded-full"
       />
     ),
@@ -364,6 +366,7 @@ export default function Singers() {
   return (
     <>
       <DataTable
+        filterKey="name"
         data={data}
         columns={
           columns({

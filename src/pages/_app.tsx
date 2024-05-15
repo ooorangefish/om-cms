@@ -5,6 +5,8 @@ import Layout from "@/components/Layout";
 import { Toaster } from "@/components/ui/toaster";
 
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -12,6 +14,15 @@ const fontSans = FontSans({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  useEffect(() => {
+    const isLogged = localStorage.getItem("admin");
+
+    if (!isLogged) {
+      router.push("/login");
+    }
+  }, []);
+
   return (
     <div
       className={cn(

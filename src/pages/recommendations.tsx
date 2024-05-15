@@ -250,7 +250,11 @@ export const columns: ({
     accessorKey: "coverImage",
     header: "专辑封面",
     cell: ({ row }) => (
-      <img src={row.getValue("coverImage")} className="h-8 w-8 rounded-sm" />
+      <img
+        //@ts-ignore
+        src={process.env.NEXT_PUBLIC_SERVER_URL + row.getValue("coverImage")}
+        className="h-8 w-8 rounded-sm"
+      />
     ),
   },
   {

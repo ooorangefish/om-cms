@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,6 +12,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 function Login() {
+  const [input, setInput] = useState("");
+
+  const handleLogin = () => {
+    if (input === "admin") {
+      localStorage.setItem("admin", "true");
+      window.location.href = "/";
+    } else {
+      alert("密码错误");
+    }
+  };
+
   return (
     <div className="w-screen h-screen flex flex-col gap-y-8 items-center justify-center">
       <p className="text-2xl font-bold">橙子音乐后台管理系统</p>
@@ -20,21 +32,19 @@ function Login() {
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">邮箱</Label>
+            <Label htmlFor="password">请输入管理员密码</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
+              id="password"
+              type="password"
               required
+              onChange={(e) => setInput(e.target.value)}
             />
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="password">密码</Label>
-            <Input id="password" type="password" required />
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full">登录</Button>
+          <Button className="w-full" onClick={handleLogin}>
+            登录
+          </Button>
         </CardFooter>
       </Card>
     </div>

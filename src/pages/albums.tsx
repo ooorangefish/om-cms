@@ -56,65 +56,99 @@ import {
 
 import { CaretSortIcon, CheckIcon } from "@radix-ui/react-icons";
 
-import { add, get } from "@/lib/requests";
+import { add, get, updateAlbum } from "@/lib/requests";
 import { type Album } from "@/types";
 
 const Edit = ({
   successCallback,
-  singer,
-  clearSinger,
+  album,
+  clearAlbum,
 }: {
   successCallback: () => void;
-  singer: Singer;
-  clearSinger: () => void;
+  album: Album;
+  clearAlbum: () => void;
 }) => {
-  console.log("singerrrr", singer);
   const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const form = useForm<Singer>({
-    defaultValues: singer,
+  const [date, setDate] = useState<Date>();
+
+  const form = useForm<Album & { artistId: string }>({
+    defaultValues: album,
   });
+  const [artists, setArtists] = useState<Singer[]>([]);
 
   useEffect(() => {
-    if (!singer) return;
-    form.setValue("name", singer.name);
-    form.setValue("bio", singer.bio);
-    form.setValue("profileImg", singer.profileImg);
-  }, [singer]);
+    if (!album) return;
+    console.log(album);
+    get("/artists")
+      .then((data) => {
+        setArtists(data);
+      })
+      .then(() => {
+        Object.keys(album).forEach((key) => {
+          if (key === "artist") {
+            form.setValue("artistId", album.artist.id + "");
+          }
+
+          if (key === "releaseDate") {
+            setDate(new Date(album.releaseDate));
+          }
+
+          form.setValue(
+            key as keyof typeof album,
+            album[key as keyof typeof album],
+          );
+        });
+      });
+  }, [album]);
+
+  useEffect(() => {
+    if (date) {
+      form.setValue("releaseDate", format(date, "yyyy-MM-dd"));
+    }
+  }, [date]);
+
+  // useEffect(() => {
+  //   if (!singer) return;
+  //   form.setValue("name", singer.name);
+  //   form.setValue("bio", singer.bio);
+  //   form.setValue("profileImg", singer.profileImg);
+  // }, [singer]);
 
   function onSubmit(data: any) {
     console.log("data", data);
     setLoading(true);
 
-    addSong(data).finally(() => {
+    updateAlbum(data).finally(() => {
       setLoading(false);
       setOpen(false);
       toast({
-        title: "歌手添加成功!",
+        title: "专辑编辑成功!",
       });
       successCallback();
     });
   }
 
   return (
-    <Dialog open={Boolean(singer)} onOpenChange={clearSinger}>
+    <Dialog open={Boolean(album)} onOpenChange={clearAlbum}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>添加歌手</DialogTitle>
+          <DialogTitle>编辑专辑</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <SongUpload />
+            <Label>专辑封面</Label>
+            <ImageUpload formField="coverImage" />
             <FormField
               control={form.control}
-              name="name"
+              name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>姓名</FormLabel>
+                  <FormLabel>专辑名称</FormLabel>
                   <FormControl>
-                    <Input placeholder="歌手姓名" {...field} />
+                    <Input placeholder="专辑名称" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -122,12 +156,78 @@ const Edit = ({
             />
             <FormField
               control={form.control}
-              name="bio"
+              name="artistId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>简介</FormLabel>
+                  <FormLabel>专辑作者</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="选择歌手" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {artists.map((artist) => (
+                        <SelectItem key={artist.id} value={artist.id + ""}>
+                          {artist.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="releaseDate"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>发行日期</FormLabel>
                   <FormControl>
-                    <Input placeholder="歌手简介" {...field} />
+                    <div>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !date && "text-muted-foreground",
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? (
+                              format(date, "yyyy-MM-dd")
+                            ) : (
+                              <span>选择日期</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="genre"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>专辑风格</FormLabel>
+                  <FormControl>
+                    <Input placeholder="专辑风格" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -251,7 +351,7 @@ const Add = ({ successCallback }: { successCallback: () => void }) => {
                             variant={"outline"}
                             className={cn(
                               "w-full justify-start text-left font-normal",
-                              !date && "text-muted-foreground"
+                              !date && "text-muted-foreground",
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -336,7 +436,11 @@ export const columns: ({
     accessorKey: "coverImage",
     header: "专辑封面",
     cell: ({ row }) => (
-      <img src={row.getValue("coverImage")} className="h-8 w-8 rounded-sm" />
+      //@ts-ignore
+      <img
+        src={process.env.NEXT_PUBLIC_SERVER_URL + row.getValue("coverImage")}
+        className="h-8 w-8 rounded-sm"
+      />
     ),
   },
   {
@@ -407,7 +511,7 @@ export default function Albums() {
   const [data, setData] = useState<Album[]>([]);
   const [shouldRefresh, setShouldRefresh] = useState(false);
   const { toast } = useToast();
-  const [editingSinger, setEditingSinger] = useState<Singer | null>(null);
+  const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
 
   useEffect(() => {
     if (shouldRefresh) {
@@ -430,7 +534,7 @@ export default function Albums() {
         columns={
           columns({
             // @ts-ignore
-            edit: (v: Singer) => setEditingSinger(v),
+            edit: (v: Singer) => setEditingAlbum(v),
             deleteRow: (id) =>
               deleteAlbum(id).then(() => {
                 setShouldRefresh(true);
@@ -443,10 +547,10 @@ export default function Albums() {
         addData={<Add successCallback={() => setShouldRefresh(true)} />}
       />
       <Edit
-        singer={editingSinger!}
-        clearSinger={() => setEditingSinger(null)}
+        album={editingAlbum!}
+        clearAlbum={() => setEditingAlbum(null)}
         successCallback={() => {
-          setEditingSinger(null);
+          setEditingAlbum(null);
           setShouldRefresh(true);
         }}
       />

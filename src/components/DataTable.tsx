@@ -28,10 +28,12 @@ const DataTable = ({
   data = [],
   columns = [],
   addData,
+  filterKey = 'title',
 }: {
   data: unknown[];
   columns: ColumnDef<unknown, any>[];
   addData: React.ReactNode;
+  filterKey?: string;
 }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -69,9 +71,9 @@ const DataTable = ({
       <div className="flex items-center justify-between py-4">
         <Input
           placeholder="搜索"
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
+            table.getColumn(filterKey)?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

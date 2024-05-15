@@ -34,7 +34,7 @@ function SongUpload({ filePath }: { filePath?: string }) {
 
       if (result) {
         console.log(result);
-        form.setValue("filPath", "http://localhost:3001/" + result.path);
+        form.setValue("filePath", result.path);
         setIsUploaded(true);
       } else {
       }

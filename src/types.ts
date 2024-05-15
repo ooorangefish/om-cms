@@ -5,7 +5,7 @@ export type Album = {
   coverImage: string;
   genre: string;
   releaseDate: string;
-  singer: Singer;
+  artist: Singer;
 };
 
 export type Singer = {

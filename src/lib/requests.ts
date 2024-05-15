@@ -1,5 +1,6 @@
-import { type Song } from "@/types";
-const baseUrl = "http://localhost:3001";
+import { type Song, type Album } from "@/types";
+//@ts-ignore
+const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL.slice(0, -1);
 
 const getSongs = async () => {
   return await fetch(baseUrl + "/songs").then((res) => res.json());
@@ -22,6 +23,16 @@ const updateSong = async (songData: Song) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(songData),
+  }).then((res) => res.json());
+};
+
+const updateAlbum = async (album: Album) => {
+  return await fetch(baseUrl + "/updateAlbum/" + album.id, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(album),
   }).then((res) => res.json());
 };
 
@@ -94,4 +105,5 @@ export {
   deleteAlbum,
   updateSong,
   deleteSong,
+  updateAlbum,
 };

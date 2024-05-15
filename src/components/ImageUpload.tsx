@@ -35,7 +35,7 @@ function ImageUpload({ formField }: { formField: string }) {
       const result = await upload("/uploadImage", formData);
 
       if (result) {
-        form.setValue(formField, "http://localhost:3001/" + result.path);
+        form.setValue(formField, result.path);
       } else {
       }
     } catch (error) {
@@ -55,7 +55,7 @@ function ImageUpload({ formField }: { formField: string }) {
       <div className="w-full flex justify-center cursor-pointer">
         {image ? (
           <img
-            src={image}
+            src={process.env.NEXT_PUBLIC_SERVER_URL+image}
             alt="Preview"
             className="h-20 w-20"
             onClick={() => ref.current?.click()}

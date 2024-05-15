@@ -345,7 +345,7 @@ export const columns: ({
     header: "文件",
     cell: ({ row }) => (
       <audio controls>
-        <source src={row.getValue("filePath")} type="audio/mp3" />
+        <source src={process.env.NEXT_PUBLIC_SERVER_URL+row.getValue("filePath")} type="audio/mp3" />
       </audio>
     ),
   },

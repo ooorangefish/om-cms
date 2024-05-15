@@ -34,7 +34,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
 
 const navItems = [
@@ -48,6 +48,7 @@ const navItems = [
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const activeNavItem = navItems.find((item) => item.href === pathname);
+  const router = useRouter();
 
   if (pathname === "/login") {
     return children;
@@ -76,7 +77,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     "flex items-center gap-3 rounded-lg px-3 py-2  transition-all hover:text-primary",
                     activeNavItem?.href === item.href
                       ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-primary"
+                      : "text-muted-foreground hover:text-primary",
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -97,12 +98,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  localStorage.clear();
+                  router.replace("/login");
+                }}
+              >
+                登出
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
