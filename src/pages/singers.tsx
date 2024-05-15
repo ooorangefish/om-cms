@@ -74,7 +74,7 @@ const Edit = ({
   function onSubmit(data: Singer) {
     console.log("data", data);
     setLoading(true);
-    fetch(`http://localhost:3000/updateArtist/${singer.id}`, {
+    fetch(`http://localhost:3001/updateArtist/${singer.id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

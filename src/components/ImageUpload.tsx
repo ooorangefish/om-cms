@@ -35,7 +35,7 @@ function ImageUpload({ formField }: { formField: string }) {
       const result = await upload("/uploadImage", formData);
 
       if (result) {
-        form.setValue(formField, "http://localhost:3000/" + result.path);
+        form.setValue(formField, "http://localhost:3001/" + result.path);
       } else {
       }
     } catch (error) {

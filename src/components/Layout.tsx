@@ -70,12 +70,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               {navItems.map((item) => (
                 <Link
+                  key={item.href}
                   href={item.href}
                   className={clsx(
                     "flex items-center gap-3 rounded-lg px-3 py-2  transition-all hover:text-primary",
                     activeNavItem?.href === item.href
                       ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-primary",
+                      : "text-muted-foreground hover:text-primary"
                   )}
                 >
                   <item.icon className="h-4 w-4" />

@@ -84,7 +84,7 @@ const Edit = ({
     form.setValue("profileImg", singer.profileImg);
   }, [singer]);
 
-  function onSubmit(data: Album) {
+  function onSubmit(data: any) {
     console.log("data", data);
     setLoading(true);
 
@@ -251,7 +251,7 @@ const Add = ({ successCallback }: { successCallback: () => void }) => {
                             variant={"outline"}
                             className={cn(
                               "w-full justify-start text-left font-normal",
-                              !date && "text-muted-foreground",
+                              !date && "text-muted-foreground"
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -350,6 +350,7 @@ export const columns: ({
     accessorKey: "artist",
     header: "专辑作者",
     cell: ({ row }) => (
+      // @ts-ignore
       <div className="lowercase">{row.getValue("artist")?.name}</div>
     ),
   },
@@ -428,6 +429,7 @@ export default function Albums() {
         data={data}
         columns={
           columns({
+            // @ts-ignore
             edit: (v: Singer) => setEditingSinger(v),
             deleteRow: (id) =>
               deleteAlbum(id).then(() => {

@@ -303,6 +303,7 @@ export const columns: ({
     accessorKey: "album",
     header: "所属专辑",
     cell: ({ row }) => (
+      // @ts-ignore
       <div className="capitalize">{row.getValue("album")?.title}</div>
     ),
   },
@@ -310,6 +311,7 @@ export const columns: ({
     accessorKey: "artist",
     header: "歌手",
     cell: ({ row }) => (
+      // @ts-ignore
       <div className="capitalize">{row.getValue("artist")?.name}</div>
     ),
   },

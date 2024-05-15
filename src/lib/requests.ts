@@ -1,5 +1,5 @@
 import { type Song } from "@/types";
-const baseUrl = "http://localhost:3000";
+const baseUrl = "http://localhost:3001";
 
 const getSongs = async () => {
   return await fetch(baseUrl + "/songs").then((res) => res.json());

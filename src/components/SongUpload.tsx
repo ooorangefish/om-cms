@@ -34,7 +34,7 @@ function SongUpload() {
 
       if (result) {
         console.log(result);
-        form.setValue("filPath", "http://localhost:3000/" + result.path);
+        form.setValue("filPath", "http://localhost:3001/" + result.path);
       } else {
       }
     } catch (error) {
